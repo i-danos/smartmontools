@@ -27,7 +27,16 @@ CFLAGS += -fsigned-char -Wall
 
 override_dh_autoreconf:
 	dh_autoreconf
-	./autogen.sh
+# autogen.sh probes for automake-1.16 down to automake-1.10 and gives up if it
+# finds none, which is what happens on Debian 13 (automake 1.17):
+#
+#     GNU Automake 1.10 (up to 1.16) is required to bootstrap smartmontools
+#     from SVN.
+#
+# The script honours $AUTOMAKE as an override, and derives ACLOCAL from it, so
+# naming the unversioned binary is enough. The version table further down only
+# prints a note for versions the developers have not tested; it is not fatal.
+	AUTOMAKE=automake ./autogen.sh
 
 override_dh_auto_configure:
 	CFLAGS="${CFLAGS}" CXXFLAGS="${CFLAGS}" \
